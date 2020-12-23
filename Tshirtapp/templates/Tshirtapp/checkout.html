@@ -12,7 +12,7 @@
                     {% csrf_token %}
                     {{form|crispy}}
                     <div class="form-group">
-                        <input type="submit" value="CheckOut" class="btn btn-outline-dark">
+                        <input type="submit" value="Checkout" class="btn btn-outline-dark">
                     </div>
                 </form>
             </div>
@@ -23,21 +23,21 @@
                         <tr>
                             <th># </th>
                             <th>Tshirt </th>
-                            <th>Price </th>
                             <th>Size </th>
+                          
+                            <th>Price </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for c in cart %}
+                    {% for c in cart %}
                 <tr>
                     <td>{{forloop.counter}}</td>
                     <td>{{c.size.tshirt.name}}</td>
                     
                     <td>{{c.size.size}}</td>
-                    <td>{% cal_selprice c.size.price c.size.tshirt.discount %}</td>
+                    <td>{% cal_selprice c.size.price c.size.tshirt.discount as result %}{{result|rupee}}</td>
                     
                 </tr>
-
 
                 {% endfor %}
                     </tbody>

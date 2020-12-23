@@ -95,8 +95,8 @@ class OrderItem(models.Model):
 class Payment(models.Model):
     
     order=models.ForeignKey(Order,on_delete=models.CASCADE)
-    payment_status=models.CharField(max_length=15,default=False)
-    payment_id=models.CharField(max_length=15)
-    payment_request_id=models.CharField(max_length=30,unique=True,null=False)
+    payment_status=models.CharField(max_length=30,default=False)
+    payment_id=models.CharField(max_length=30)
+    payment_request_id=models.CharField(max_length=50,unique=True,null=False)
     date=models.DateTimeField(null=False,auto_now_add=True)
             
