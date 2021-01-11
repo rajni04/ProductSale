@@ -10,13 +10,13 @@ def rupee(number):
 @register.simple_tag
 def min_price(t):
     print(min_price)
-    size=t.sizevariant_set.all().order_by('price').first()
+    size=t.sizevarient_set.all().order_by('price').first()
     return floor(size.price)
 
 @register.simple_tag
-def sale_price(t):
+def sale_price(tshirt):
     price=min_price(tshirt)
-    discount=t.discount
+    discount=tshirt.discount
     return floor(price - (price *(discount/100)))
 
 @register.simple_tag

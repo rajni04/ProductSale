@@ -1,6 +1,6 @@
 {% extends "./base.html" %}
 {% load tshirts_tags %}
-
+{% load filter_tags %}
 {% load static %}
 
 {% block content %}
@@ -131,6 +131,13 @@
     </div>
   </div>
 </div>
+<script>
+
+
+  function submitForm() {
+    document.getElementById('filterForm').submit()
+  }
+</script>
 
 
 {% endblock %}

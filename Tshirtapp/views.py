@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from Tshirtapp.forms.checkout_form import CheckForm
 from instamojo_wrapper import Instamojo
 from Tshirt.settings import API_KEY, AUTH_TOKEN
+from django.core.paginator import Paginator
+from urllib.parse import urlencode
 API = Instamojo(api_key=API_KEY,
                 auth_token=AUTH_TOKEN,
                 endpoint='https://test.instamojo.com/api/1.1/')
@@ -25,23 +27,61 @@ def show_product(request,slug):
     sell_price=size_price-(size_price *(tshirt.discount/100))
     sell_price=floor(sell_price)
     return render(request,template_name='Tshirtapp/product_details.html',context={'tshirt':tshirt,'price':size_price,'sell_price':sell_price,'active_size':size})
+
+
 def home(request):
-    tshirt=Tshirt.objects.all()
-    print(len(tshirt))
+    query = request.GET
+    tshirts = []
+    tshirts = Tshirt.objects.all()
 
-    for t in tshirt:
-        all_s=t.sizevarient_set.all().order_by('price') #to get all size '
-        print(all_s,'rrrrrrrrrrrrrrrrrrrrrr')
-        min_price=t.sizevarient_set.all().order_by('price').first() # to get min price
-        print(t, min_price.price, min_price.size)
-        t.min_price=min_price.price
-        t.after_discount=t.min_price-(t.min_price* t.discount/100)
-        t.after_discount=floor(t.after_discount)  #created tags for shortcut in tshirts_tags.py
-    context={
-        'tshirt':tshirt
+    brand = query.get('brand')
+    neckType = query.get('necktype')
+    color = query.get('color')
+    idealFor = query.get('idealfor')
+    sleeve = query.get('sleeve')
+    page = query.get('page')
+
+    if(page is None or page == ''):
+        page = 1
+
+    if brand != '' and brand is not None:
+        tshirts = tshirts.filter(brand__slug=brand)
+    if neckType != '' and neckType is not None:
+        tshirts = tshirts.filter(necktype__slug=neckType)
+    if color != '' and color is not None:
+        tshirts = tshirts.filter(color__slug=color)
+    if sleeve != '' and sleeve is not None:
+        tshirts = tshirts.filter(sleeve__slug=sleeve)
+    if idealFor != '' and idealFor is not None:
+        tshirts = tshirts.filter(idealfor__slug=idealFor)
+
+    occasions = Occasion.objects.all()
+    brands = Brand.objects.all()
+    sleeves = Sleeve.objects.all()
+    idealFor = IdealFor.objects.all()
+    neckTypes = NeckType.objects.all()
+    colors = Color.objects.all()
+
+    cart = request.session.get('cart')
+
+    paginator = Paginator(tshirts , 3)
+    page_object = paginator.get_page(page)
+
+    query = request.GET.copy()
+    query['page'] = ''
+    pageurl = urlencode(query)
+
+    context = {
+        "page_object": page_object,
+        "occasions": occasions,
+        "brands": brands,
+        'colors': colors,
+        'sleeves': sleeves,
+        'neckTypes': neckTypes,
+        'idealFor': idealFor, 
+        'pageurl' : pageurl
     }
-    return render(request,template_name='Tshirtapp/home.html',context=context)
-
+    return render(request, template_name='tshirtapp/home.html', context=context)
 def cart(request):
 
     cart=request.session.get('cart')
